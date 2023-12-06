@@ -1,0 +1,41 @@
+# Ignore CSV files
+*.csv
+
+# Ignore TXT files
+*.txt
+
+# Ignore GraphML files
+*.graphml
+
+# Ignore log files
+*.log
+
+# Ignore compiled binaries
+*.exe
+*.out
+*.dll
+
+# Ignore database files
+*.sqlite
+*.db
+
+# Ignore package files
+*.zip
+*.tar.gz
+
+# Ignore node modules (for Node.js projects)
+node_modules/
+
+# Ignore virtual environment (for Python projects)
+venv/
+
+# Ignore IDE and editor-specific files
+.vscode/
+.idea/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore environment configuration files
+.env
