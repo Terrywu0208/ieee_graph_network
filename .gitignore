@@ -2,7 +2,7 @@
 *.csv
 
 # Ignore TXT files
-*.txt
+error_log.txt
 
 # Ignore GraphML files
 *.graphml
