@@ -207,7 +207,7 @@ def extract_essay_list(response):
 
     return result_dict
 
-def ieee_crawler(search_keywords, max_pages, file_name=None, sleep_min=5, sleep_max=10, max_retries=3):
+def ieee_crawler(search_keywords, max_pages, file_name=None, sleep_min=5, sleep_max=10, max_retries=2):
     """Main function to crawl IEEE paper data.
 
     Args:
@@ -250,6 +250,7 @@ def ieee_crawler(search_keywords, max_pages, file_name=None, sleep_min=5, sleep_
                 retries = 0
                 while retries < max_retries:
                     try:
+                        time.sleep(4)
                         references = crawl_ieee_reference(essay_code, headers)
                         authors = crawl_ieee_paper_authors(essay_code, headers)
                         if authors is not None and references is not None:
@@ -267,14 +268,14 @@ def ieee_crawler(search_keywords, max_pages, file_name=None, sleep_min=5, sleep_
                         retries += 1
                         logging.error(f"Failed with exception: {e}. Retrying...")
                         time.sleep(random.randint(sleep_min, sleep_max))
-    return data_list
+    df = pd.DataFrame(data_list)
+    return df
 
 def main(search_keywords, max_pages, file_name, sleep_min=5, sleep_max=10, max_retries=3):
-    data_list = ieee_crawler(search_keywords, max_pages, file_name, sleep_min, sleep_max, max_retries)
+    df = ieee_crawler(search_keywords, max_pages, file_name, sleep_min, sleep_max, max_retries)
     folder_name = "output_data"
     os.makedirs(folder_name, exist_ok=True)
     csv_file_path = os.path.join(folder_name, f"{file_name}.csv")
-    df = pd.DataFrame(data_list)
     df.to_csv(csv_file_path)
 
 if __name__ == '__main__':
@@ -288,5 +289,5 @@ if __name__ == '__main__':
     if not any(vars(args).values()):
         parser.print_help()
     else:
-        print(args.search_keywords)
+
         main(args.search_keywords, args.max_pages, args.file_name)

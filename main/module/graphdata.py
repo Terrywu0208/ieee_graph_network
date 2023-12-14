@@ -46,7 +46,7 @@ OUTPUT_DIRECTORY = './graphml/'
 OUTPUT_AUTHORS_GRAPHML = os.path.join(OUTPUT_DIRECTORY, 'authors.graphml')
 OUTPUT_REFERENCES_GRAPHML = os.path.join(OUTPUT_DIRECTORY, 'ref.graphml')
 
-def create_and_save_graph(data_frame, source_type, output_file):
+def create_and_save_graph(data_frame, authors_col, references_col, output_file):
     """Create a graph from the given data and save it to a GraphML file.
 
     Args:
@@ -58,7 +58,7 @@ def create_and_save_graph(data_frame, source_type, output_file):
     try:
         graph = nx.Graph()
 
-        data_frame.apply(lambda row: process_row(row, graph, source_type), axis=1)
+        data_frame.apply(lambda row: process_row(row, graph, authors_col, references_col), axis=1)
 
         nx.write_graphml(graph, output_file)
 
@@ -66,7 +66,7 @@ def create_and_save_graph(data_frame, source_type, output_file):
         error_message = (f"Error creating and saving graph: {e}")
         logging.error(error_message)
 
-def process_row(row, graph, source_type):
+def process_row(row, graph, authors_col, references_col):
     """Process a row of data and add edges to the graph.
 
     Args:
@@ -76,11 +76,9 @@ def process_row(row, graph, source_type):
         references_col (str): The column name containing references' information.
     """
     try:
-        if source_type == "author":
-            items = row[source_type].split(';') if source_type in row else json.loads(row[source_type]).keys()
-            # for pair in combinations(items, 2):
-            #     graph.add_edge(pair[1], row["title"])
-            print(items)
+        items = row[authors_col].split(';') if authors_col in row else json.loads(row[references_col]).keys()
+        for pair in combinations(items, 2):
+            graph.add_edge(pair[1], row["title"])
 
     except Exception as e:
         error_message = (f"Error processing row: {e}")
@@ -113,10 +111,10 @@ def main():
         data_frame = pd.read_csv(args.input)
 
         logging.info("Creating and saving authors graphml...")
-        create_and_save_graph(data_frame, 'author', args.output_authors)
+        create_and_save_graph(data_frame, 'author', None, args.output_authors)
 
         logging.info("Creating and saving references graphml...")
-        create_and_save_graph(data_frame, 'reference', args.output_references)
+        create_and_save_graph(data_frame, None, 'reference', args.output_references)
 
     except Exception as e:
         logging.error(f"An error occurred: {e}")
